@@ -6,44 +6,44 @@ on:
   push:
     branches: [main]
 
-  # 실제로 할일 jobs
-  jobs:
-    build:
-      runs-on:  ubuntu-20.04
-      # gitaction을 수행하기 위한 운영체계 설정(가상 인스턴스) 지정
-      # 18.04 (X)
-      strategy:
-        matrix: 
-          node-version: [20.11.0]
-          # https://nodejs.org/en/aboud/release 
-          # 사용 버전 명시
+# 실제로 할일 jobs
+jobs:
+  build:
+    runs-on:  ubuntu-20.04
+    # gitaction을 수행하기 위한 운영체계 설정(가상 인스턴스) 지정
+    # 18.04 (X)
+    strategy:
+      matrix: 
+        node-version: [20.11.0]
+        # https://nodejs.org/en/aboud/release 
+        # 사용 버전 명시
 
-      steps:
-        - name: Checkout Source Code. 소스코드를 내려받는다
-          uses: actions/checkout@v3
+    steps:
+      - name: Checkout Source Code. 소스코드를 내려받는다
+        uses: actions/checkout@v3
 
-        - name: Use Nodejs ${{ matrix.node-version }}. 노드 설치
-          uses: actions/setup-node@v3
-          with:
-            node-version: ${{ matrix.node-version }}
+      - name: Use Nodejs ${{ matrix.node-version }}. 노드 설치
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
-        - name: npm 체크
-          run:  npm -v
+      - name: npm 체크
+        run:  npm -v
 
-        - name: 환경변수 파일 생성. gitaction에서 보안으로 저장한 값을 불러서 코드에서 사용토록 처리
-          working-directory:  ./
-          run:  
-            pwd
-            touch .env
-            echo PORT=${{ secrets.PORT }} >> .env
-            cat .env
-        
-        - name: package install. 패키지 설치
-          working-directory:  ./
-          run:  
-            npm install
+      - name: 환경변수 파일 생성. gitaction에서 보안으로 저장한 값을 불러서 코드에서 사용토록 처리
+        working-directory:  ./
+        run:  
+          pwd
+          touch .env
+          echo PORT=${{ secrets.PORT }} >> .env
+          cat .env
+      
+      - name: package install. 패키지 설치
+        working-directory:  ./
+        run:  
+          npm install
 
-        - name: build(babel->표준js), webpack->압축:프런트), jest(단위테스트) 등등 계속 추가 가능. 
-          working-directory:  ./
-          run:
-            npm run build
+      - name: build(babel->표준js), webpack->압축:프런트), jest(단위테스트) 등등 계속 추가 가능. 
+        working-directory:  ./
+        run:
+          npm run build
