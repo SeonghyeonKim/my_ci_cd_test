@@ -128,7 +128,14 @@ ci/cd 테스트
         - sudo service codedeploy-agent status
             - active (running) -> agent 작동중
     - ec2 서버가 재가동했을 때 자동으로 에이전트 가동되게 설정 (옵션)
-        - 
+        - sudo nano /etc/init.d/codedeploy-startup.sh
+            - 편집
+            ```
+            #!/bin
+            sudo service codedeploy-agent restart
+            ```
+            - 저장 후 nano 종료 (ctrl + x, y, 엔터) 
+        - sudo chmod +x /etc/init.d/codedeploy-startup.sh
         
 # CD-소스파일
     - appspec.yaml 파일 생성(루트)
