@@ -47,3 +47,24 @@ jobs:
         working-directory:  ./
         run:
           npm run build
+
+      - name: 빌드한 소스코드, 리소스, 기타 설정파일 => 압축(zip)
+        run:  zip -r app.zip ./bin ./build ./public ./routes ./views ./app.js ./package.json ./.env
+
+      - name: aws 접속
+        uses: aws-actions/configure-aws-credentials@v1
+        with: 
+          aws-access-key-id:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: 압축한 리소스 => s3에 업로드
+        run:  aws s3 cp --region ap-northeast-2 ./app.zip s3://버킷/경로
+        # run:  aws s3 cp --region ap-northeast-2 ./app zip s3://custom-bucket/deploy/
+
+      - name: AWS codeDeploy 서비스의 절차에 따라 배포 시작
+        run:  aws deploy create-deployment
+        --application-name 내 code-deploy
+        --deployment-config-name CodeDeployDefault.OneAtATime
+        --deployment-group-name dev
+        --s3-location bucket=custom-bucket,bundleType=zip,key=deploy/app.zip
